@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MangaForge 高保真交互原型</title>
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #5b21b6;
+      --pink: #ec4899;
+      --bg: #f5f3ff;
+      --sidebar: #111827;
+      --sidebar-2: #1f2937;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --shadow: 0 18px 45px rgba(17, 24, 39, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    button, input, textarea, select {
+      font-family: inherit;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(236,72,153,0.28), transparent 28%),
+        radial-gradient(circle at 80% 80%, rgba(124,58,237,0.32), transparent 32%),
+        linear-gradient(135deg, #111827, #312e81 52%, #7c2d12);
+      color: white;
+    }
+
+    .login-hero {
+      padding: 80px 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--pink));
+      display: grid;
+      place-items: center;
+      box-shadow: 0 16px 40px rgba(236,72,153,0.3);
+    }
+
+    .login-hero h1 {
+      font-size: 58px;
+      line-height: 1.06;
+      margin: 48px 0 18px;
+      max-width: 760px;
+      letter-spacing: -0.06em;
+    }
+
+    .login-hero p {
+      color: rgba(255,255,255,0.78);
+      font-size: 18px;
+      line-height: 1.8;
+      max-width: 640px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 18px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      padding: 18px 22px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      border-radius: 18px;
+      backdrop-filter: blur(16px);
+      min-width: 150px;
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .hero-stat span {
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .login-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      padding: 36px;
+      background: rgba(255,255,255,0.96);
+      color: var(--text);
+      border-radius: 28px;
+      box-shadow: 0 30px 90px rgba(0,0,0,0.28);
+    }
+
+    .login-card h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .login-card p {
+      margin: 0 0 28px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 8px;
+      font-weight: 650;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      outline: none;
+      background: white;
+      transition: all .2s;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 86px;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(124,58,237,0.12);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--pink));
+      color: white;
+      box-shadow: 0 12px 24px rgba(124,58,237,0.22);
+    }
+
+    .btn-dark {
+      background: #111827;
+      color: white;
+    }
+
+    .btn-ghost {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--primary);
+      border: 1px solid #ddd6fe;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .login-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 13px;
+      font-size: 15px;
+    }
+
+    .app {
+      display: none;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(180deg, #111827, #1e1b4b);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      padding: 20px 14px;
+    }
+
+    .sidebar .brand-mark {
+      padding: 4px 10px 22px;
+      font-size: 18px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: rgba(255,255,255,0.72);
+      cursor: pointer;
+      font-size: 14px;
+      transition: all .2s;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(124,58,237,0.95), rgba(236,72,153,0.9));
+      color: white;
+      box-shadow: 0 14px 30px rgba(124,58,237,0.24);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 72px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .topbar-title strong {
+      font-size: 18px;
+    }
+
+    .topbar-title span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--pink));
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .content {
+      flex: 1;
+      overflow: auto;
+      padding: 28px;
+    }
+
+    .page {
+      display: none;
+      animation: fade .18s ease-out;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 22px;
+    }
+
+    .page-title h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.04em;
+    }
+
+    .page-title p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(229,231,235,0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .card-title {
+      margin: 0 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-title h3 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .stat-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .stat-card strong {
+      font-size: 28px;
+      display: block;
+      margin-top: 8px;
+      letter-spacing: -0.04em;
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #ede9fe;
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .toolbar input, .toolbar select {
+      width: auto;
+      min-width: 180px;
+    }
+
+    .project-card {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .project-cover {
+      height: 110px;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      padding: 18px;
+      position: relative;
+    }
+
+    .project-cover h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .project-body {
+      padding: 18px;
+    }
+
+    .tag, .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tag {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .status.success { background: #d1fae5; color: #047857; }
+    .status.warning { background: #fef3c7; color: #b45309; }
+    .status.info { background: #dbeafe; color: #1d4ed8; }
+    .status.danger { background: #fee2e2; color: #b91c1c; }
+    .status.purple { background: #ede9fe; color: #6d28d9; }
+
+    .progress {
+      height: 8px;
+      background: #f3f4f6;
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 14px 0 8px;
+    }
+
+    .progress > span {
+      height: 100%;
+      display: block;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--primary), var(--pink));
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .table th, .table td {
+      text-align: left;
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .table th {
+      color: #4b5563;
+      font-size: 12px;
+      background: #fafafa;
+    }
+
+    .table tr:hover td {
+      background: #faf5ff;
+    }
+
+    .upload-zone {
+      border: 2px dashed #c4b5fd;
+      border-radius: 22px;
+      padding: 42px 24px;
+      text-align: center;
+      background: linear-gradient(180deg, #faf5ff, #fff);
+    }
+
+    .upload-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 24px;
+      margin: 0 auto 18px;
+      display: grid;
+      place-items: center;
+      background: #ede9fe;
+      color: var(--primary);
+      font-size: 34px;
+    }
+
+    .split-layout {
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 680px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .chapter-item {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      background: white;
+      transition: all .2s;
+    }
+
+    .chapter-item:hover,
+    .chapter-item.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(124,58,237,0.08);
+    }
+
+    .chapter-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      font-size: 12px;
+      color: #374151;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      background: white;
+      border: 1px solid var(--border);
+      font-weight: 700;
+      color: #4b5563;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .episode-layout {
+      display: grid;
+      grid-template-columns: 310px 360px minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .storyboard-layout {
+      display: grid;
+      grid-template-columns: 280px minmax(460px, 1fr) 330px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .sticky {
+      position: sticky;
+      top: 0;
+    }
+
+    .panel-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .panel-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: white;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(17,24,39,0.04);
+    }
+
+    .panel-card.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(124,58,237,0.08), 0 14px 35px rgba(17,24,39,0.08);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .panel-head strong {
+      font-size: 15px;
+    }
+
+    .panel-field {
+      margin: 10px 0;
+    }
+
+    .panel-field label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+      font-weight: 700;
+    }
+
+    .comic-phone {
+      width: 100%;
+      border-radius: 24px;
+      padding: 12px;
+      background: #111827;
+      box-shadow: 0 24px 60px rgba(17,24,39,0.2);
+    }
+
+    .comic-screen {
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px;
+      max-height: 540px;
+      overflow: auto;
+    }
+
+    .comic-panel {
+      min-height: 82px;
+      border: 1px solid #e5e7eb;
+      background: linear-gradient(135deg, #f9fafb, #f5f3ff);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .bubble {
+      display: inline-block;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .prompt-box {
+      background: #0f172a;
+      color: #dbeafe;
+      border-radius: 14px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .export-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      background: white;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .export-card:hover,
+    .export-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(124,58,237,0.08);
+      transform: translateY(-2px);
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: #111827;
+      color: white;
+      padding: 13px 18px;
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px);
+      transition: all .25s;
+      z-index: 50;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(17,24,39,0.5);
+      backdrop-filter: blur(8px);
+      z-index: 40;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 760px;
+      max-height: 90vh;
+      overflow: auto;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.28);
+      padding: 24px;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .modal-head h2 {
+      margin: 0 0 6px;
+    }
+
+    .modal-close {
+      border: none;
+      background: #f3f4f6;
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .flow-steps {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      background: #f3f4f6;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #4b5563;
+      font-weight: 700;
+    }
+
+    .flow-step.done {
+      background: #d1fae5;
+      color: #047857;
+    }
+
+    .flow-step.active {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .mini-code {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      border-radius: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: #334155;
+    }
+
+    @media (max-width: 1200px) {
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .episode-layout, .storyboard-layout {
+        grid-template-columns: 1fr;
+      }
+      .sticky { position: static; }
+    }
+
+    @media (max-width: 800px) {
+      .login-screen { grid-template-columns: 1fr; }
+      .login-hero { padding: 48px 24px; }
+      .login-hero h1 { font-size: 38px; }
+      .app { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 12px;
+      }
+      .sidebar .brand-mark, .sidebar-footer { display: none; }
+      .nav { flex-direction: row; margin: 0; }
+      .nav-item { white-space: nowrap; }
+      .split-layout, .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .content { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <section id="login" class="login-screen">
+    <div class="login-hero">
+      <div class="brand-mark">
+        <div class="brand-icon">◆</div>
+        <span>MangaForge</span>
+      </div>
+      <h1>用 AI 把长篇小说锻造成可连载漫画</h1>
+      <p>MangaForge 面向网文作者、IP 方和漫画工作室，提供小说导入、AI 解析、角色知识库、单话改编、漫画分镜和 Prompt 导出的完整工作台。</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>500W+</strong><span>支持百万字级小说拆解</span></div>
+        <div class="hero-stat"><strong>30-60</strong><span>单话漫画分镜格数</span></div>
+        <div class="hero-stat"><strong>5 种</strong><span>制作资料导出格式</span></div>
+      </div>
+    </div>
+    <div class="login-panel">
+      <div class="login-card">
+        <h2>进入工作台</h2>
+        <p>使用演示账号登录，体验从小说到漫画分镜的完整流程。</p>
+        <div class="form-group">
+          <label>账号</label>
+          <input value="demo@mangaforge.ai" />
+        </div>
+        <div class="form-group">
+          <label>密码</label>
+          <input type="password" value="123456" />
+        </div>
+        <button class="btn btn-primary login-btn" onclick="enterApp()">登录 MangaForge</button>
+        <p style="font-size:12px;margin-top:18px;">原型演示：点击登录直接进入工作台。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="app" class="app">
+    <aside class="sidebar">
+      <div class="brand-mark">
+        <div class="brand-icon">◆</div>
+        <span>MangaForge</span>
+      </div>
+      <nav class="nav">
+        <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')">🏠 项目工作台</div>
+        <div class="nav-item" data-page="project" onclick="showPage('project')">📌 项目详情</div>
+        <div class="nav-item" data-page="import" onclick="showPage('import')">📤 小说导入</div>
+        <div class="nav-item" data-page="chapters" onclick="showPage('chapters')">📚 章节管理</div>
+        <div class="nav-item" data-page="analysis" onclick="showPage('analysis')">✨ AI 解析</div>
+        <div class="nav-item" data-page="knowledge" onclick="showPage('knowledge')">🧠 知识库</div>
+        <div class="nav-item" data-page="episode" onclick="showPage('episode')">🎬 单话改编</div>
+        <div class="nav-item" data-page="script" onclick="showPage('script')">📝 单话剧本</div>
+        <div class="nav-item" data-page="storyboard" onclick="showPage('storyboard')">🧩 分镜编辑器</div>
+        <div class="nav-item" data-page="export" onclick="showPage('export')">📦 导出中心</div>
+        <div class="nav-item" data-page="tasks" onclick="showPage('tasks')">⚙️ AI 任务</div>
+      </nav>
+      <div class="sidebar-footer">
+        当前项目：云州旧梦<br />
+        状态：分镜生成中<br />
+        MVP 原型 v0.5
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-title">
+          <strong id="pageTitle">项目工作台</strong>
+          <span>AI-powered long-form novel to comic adaptation workbench</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-outline" onclick="openCreateModal()">+ 新建项目</button>
+          <button class="btn btn-ghost" onclick="showToast('已复制当前页面演示链接')">分享原型</button>
+          <div class="avatar">M</div>
+        </div>
+      </header>
+
+      <div class="content">
+        <section id="page-dashboard" class="page active">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>项目工作台</h1>
+              <p>管理所有小说漫改项目，快速进入最近编辑任务。</p>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateModal()">创建项目</button>
+          </div>
+
+          <div class="grid grid-4">
+            <div class="card stat-card"><div><span class="muted">项目总数</span><strong>12</strong></div><div class="stat-icon">📁</div></div>
+            <div class="card stat-card"><div><span class="muted">已解析章节</span><strong>286</strong></div><div class="stat-icon">✨</div></div>
+            <div class="card stat-card"><div><span class="muted">已生成话数</span><strong>38</strong></div><div class="stat-icon">🎬</div></div>
+            <div class="card stat-card"><div><span class="muted">导出文件</span><strong>91</strong></div><div class="stat-icon">📦</div></div>
+          </div>
+
+          <div class="toolbar" style="margin-top:22px;">
+            <input placeholder="搜索项目名称" value="云州" />
+            <select><option>全部类型</option><option>古风</option><option>都市</option><option>玄幻</option></select>
+            <select><option>全部状态</option><option>解析中</option><option>分镜中</option><option>已导出</option></select>
+          </div>
+
+          <div class="grid grid-3">
+            <div class="card project-card">
+              <div class="project-cover">
+                <h3>云州旧梦</h3>
+                <span class="status info">分镜中</span>
+              </div>
+              <div class="project-body">
+                <div class="meta-row"><span class="tag">古风</span><span class="tag">国漫条漫</span><span class="tag">女频</span></div>
+                <p class="muted">已解析 36 / 120 章，已生成 4 话漫画分镜。</p>
+                <div class="progress"><span style="width: 42%"></span></div>
+                <div class="muted">总体进度 42%</div>
+                <div class="toolbar" style="margin:16px 0 0;">
+                  <button class="btn btn-primary" onclick="showPage('project')">进入项目</button>
+                  <button class="btn btn-ghost" onclick="showPage('storyboard')">继续编辑</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card project-card">
+              <div class="project-cover" style="background:linear-gradient(135deg,#0ea5e9,#7c3aed)">
+                <h3>霓虹尽头</h3>
+                <span class="status warning">解析中</span>
+              </div>
+              <div class="project-body">
+                <div class="meta-row"><span class="tag">赛博朋克</span><span class="tag">悬疑</span><span class="tag">青年向</span></div>
+                <p class="muted">正在解析第 18 章，角色库待补全。</p>
+                <div class="progress"><span style="width: 28%"></span></div>
+                <div class="muted">总体进度 28%</div>
+                <div class="toolbar" style="margin:16px 0 0;">
+                  <button class="btn btn-outline" onclick="showPage('analysis')">查看解析</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card project-card">
+              <div class="project-cover" style="background:linear-gradient(135deg,#10b981,#3b82f6)">
+                <h3>社恐女孩与猫</h3>
+                <span class="status success">已导出</span>
+              </div>
+              <div class="project-body">
+                <div class="meta-row"><span class="tag">治愈</span><span class="tag">日系清新</span><span class="tag">短篇</span></div>
+                <p class="muted">第 1 话分镜表、Prompt 和 HTML 预览已导出。</p>
+                <div class="progress"><span style="width: 100%"></span></div>
+                <div class="muted">总体进度 100%</div>
+                <div class="toolbar" style="margin:16px 0 0;">
+                  <button class="btn btn-outline" onclick="showPage('export')">查看导出</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-project" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>云州旧梦 · 项目详情</h1>
+              <p>项目状态、流程进度与快捷入口。</p>
+            </div>
+            <span class="status info">当前阶段：分镜中</span>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><h3>核心流程进度</h3><span class="muted">最近更新：今天 14:20</span></div>
+            <div class="flow-steps">
+              <div class="flow-step done">✓ 创建项目</div>
+              <div class="flow-step done">✓ 上传小说</div>
+              <div class="flow-step done">✓ 自动拆章</div>
+              <div class="flow-step done">✓ AI 解析</div>
+              <div class="flow-step done">✓ 单话改编</div>
+              <div class="flow-step active">● 分镜编辑</div>
+              <div class="flow-step">导出资料</div>
+            </div>
+          </div>
+
+          <div class="grid grid-4" style="margin-top:18px;">
+            <div class="card stat-card"><div><span class="muted">总字数</span><strong>128W</strong></div><div class="stat-icon">📖</div></div>
+            <div class="card stat-card"><div><span class="muted">章节数</span><strong>120</strong></div><div class="stat-icon">📚</div></div>
+            <div class="card stat-card"><div><span class="muted">角色数</span><strong>42</strong></div><div class="stat-icon">👥</div></div>
+            <div class="card stat-card"><div><span class="muted">分镜格数</span><strong>186</strong></div><div class="stat-icon">🧩</div></div>
+          </div>
+
+          <div class="grid grid-3" style="margin-top:18px;">
+            <div class="card"><div class="card-title"><h3>小说导入</h3></div><p class="muted">TXT 已上传，120 章识别完成。</p><button class="btn btn-outline" onclick="showPage('import')">进入</button></div>
+            <div class="card"><div class="card-title"><h3>AI 解析</h3></div><p class="muted">36 章已解析，84 章待解析。</p><button class="btn btn-outline" onclick="showPage('analysis')">进入</button></div>
+            <div class="card"><div class="card-title"><h3>分镜编辑器</h3></div><p class="muted">第 4 话正在编辑，共 42 格。</p><button class="btn btn-primary" onclick="showPage('storyboard')">继续编辑</button></div>
+          </div>
+        </section>
+
+        <section id="page-import" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>小说导入</h1>
+              <p>上传 TXT 小说，系统自动识别章节并生成章节列表。</p>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('章节已保存，进入章节管理')">保存章节</button>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="card">
+              <div class="upload-zone">
+                <div class="upload-icon">📤</div>
+                <h3>拖拽 TXT 小说到这里</h3>
+                <p class="muted">支持 UTF-8 / GBK，建议文件小于 50MB。原型中点击按钮模拟上传。</p>
+                <button class="btn btn-primary" onclick="simulateUpload()">选择文件</button>
+                <div class="progress" style="margin-top:20px;"><span id="uploadProgress" style="width: 78%"></span></div>
+                <div class="muted" id="uploadText">yunzhou_old_dream.txt · 上传完成 78%</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title"><h3>文件信息</h3><span class="status success">已上传</span></div>
+              <table class="table">
+                <tr><th>字段</th><th>内容</th></tr>
+                <tr><td>文件名</td><td>yunzhou_old_dream.txt</td></tr>
+                <tr><td>文件大小</td><td>32.8 MB</td></tr>
+                <tr><td>文本编码</td><td>UTF-8</td></tr>
+                <tr><td>总字数</td><td>1,280,000</td></tr>
+                <tr><td>识别章节</td><td>120 章</td></tr>
+                <tr><td>上传时间</td><td>2026-05-10 14:20</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:18px;">
+            <div class="card-title">
+              <h3>章节识别预览</h3>
+              <div><button class="btn btn-ghost" onclick="showToast('已重新拆章')">重新拆章</button><button class="btn btn-outline" onclick="showPage('chapters')">进入章节管理</button></div>
+            </div>
+            <table class="table">
+              <thead><tr><th>序号</th><th>卷名</th><th>章节标题</th><th>字数</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>001</td><td>第一卷</td><td>第1章 雨夜退婚</td><td>3,820</td><td><span class="status success">正常</span></td><td><button class="btn btn-ghost">查看</button></td></tr>
+                <tr><td>002</td><td>第一卷</td><td>第2章 重回沈家</td><td>4,120</td><td><span class="status success">正常</span></td><td><button class="btn btn-ghost">查看</button></td></tr>
+                <tr><td>003</td><td>第一卷</td><td>第3章 玉佩旧事</td><td>5,240</td><td><span class="status warning">偏长</span></td><td><button class="btn btn-ghost">拆分</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="page-chapters" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>章节管理</h1>
+              <p>查看章节正文，编辑章节内容，并触发 AI 解析。</p>
+            </div>
+            <div><button class="btn btn-outline" onclick="showToast('已创建批量解析任务')">批量解析</button><button class="btn btn-primary" onclick="showPage('analysis')">解析当前章节</button></div>
+          </div>
+
+          <div class="split-layout">
+            <div class="card">
+              <div class="card-title"><h3>章节列表</h3><span class="muted">120 章</span></div>
+              <div class="chapter-list">
+                <div class="chapter-item active"><strong>第1章 雨夜退婚</strong><span class="muted">3,820 字 · 已解析</span></div>
+                <div class="chapter-item"><strong>第2章 重回沈家</strong><span class="muted">4,120 字 · 已解析</span></div>
+                <div class="chapter-item"><strong>第3章 玉佩旧事</strong><span class="muted">5,240 字 · 解析中</span></div>
+                <div class="chapter-item"><strong>第4章 暗处来客</strong><span class="muted">3,910 字 · 未解析</span></div>
+                <div class="chapter-item"><strong>第5章 旧约重提</strong><span class="muted">4,008 字 · 未解析</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">
+                <h3>第1章 雨夜退婚</h3>
+                <div><span class="status success">已解析</span></div>
+              </div>
+              <p class="muted">卷名：第一卷 · 字数：3,820 · 最近编辑：今天 14:32</p>
+              <div class="mini-code">雨下得很急。
+
+沈青禾站在沈家府门前，任由雨水顺着发梢落下。朱红大门缓缓打开，门内灯火通明，却没有一盏灯是为她而点。
+
+“小姐，夫人已经在正厅等您。”
+
+她握紧袖中的玉佩，轻声道：“知道了。”</div>
+              <div class="grid grid-2" style="margin-top:18px;">
+                <div class="card" style="box-shadow:none;"><h3>章节摘要</h3><p class="muted">沈青禾雨夜回到沈家，被沈夫人逼迫接受婚约，最终当众退婚。</p></div>
+                <div class="card" style="box-shadow:none;"><h3>关键事件</h3><div class="pill-list"><span class="pill">雨夜归家</span><span class="pill">正厅对峙</span><span class="pill">当众退婚</span></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-analysis" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>AI 章节解析</h1>
+              <p>将小说章节转换为摘要、角色、事件、场景、伏笔和漫改建议。</p>
+            </div>
+            <div><button class="btn btn-outline" onclick="simulateAiTask()">重新解析</button><button class="btn btn-primary" onclick="showToast('已保存到知识库')">保存到知识库</button></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <h3>第1章 雨夜退婚</h3>
+              <span id="aiStatus" class="status success">解析成功</span>
+            </div>
+            <p class="muted">NovelChapterAnalysisAgent · 用时 46 秒 · JSON Schema 校验通过</p>
+          </div>
+
+          <div class="analysis-grid" style="margin-top:18px;">
+            <div class="card"><div class="card-title"><h3>章节摘要</h3></div><p>沈青禾在雨夜回到沈家，当众拒绝被安排的婚事，与沈夫人发生第一次正面冲突。</p></div>
+            <div class="card"><div class="card-title"><h3>出场人物</h3></div><div class="pill-list"><span class="pill">沈青禾</span><span class="pill">沈夫人</span><span class="pill">顾长渊</span><span class="pill">丫鬟春桃</span></div></div>
+            <div class="card"><div class="card-title"><h3>关键事件</h3></div><ul class="muted"><li>沈青禾回到沈家。</li><li>沈夫人逼她接受婚约。</li><li>沈青禾当众退婚。</li><li>顾长渊在暗处看到玉佩。</li></ul></div>
+            <div class="card"><div class="card-title"><h3>可视化画面</h3></div><div class="pill-list"><span class="pill">雨夜府门</span><span class="pill">玉佩特写</span><span class="pill">正厅烛火</span><span class="pill">女主抬眼</span></div></div>
+            <div class="card"><div class="card-title"><h3>伏笔</h3></div><p class="muted">玉佩来源未解释；顾长渊疑似认识玉佩；沈夫人对女主母亲旧事有所隐瞒。</p></div>
+            <div class="card"><div class="card-title"><h3>漫改建议</h3></div><p class="muted">适合强冲突开场，前 5 格快速建立雨夜、压迫和女主反抗。心理描写改为眼神、动作和玉佩特写。</p></div>
+          </div>
+        </section>
+
+        <section id="page-knowledge" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>小说知识库</h1>
+              <p>管理角色、事件、场景、伏笔和禁改设定，保证长篇漫改一致性。</p>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('已新增角色卡片')">新增角色</button>
+          </div>
+
+          <div class="tabs">
+            <div class="tab active">角色库</div>
+            <div class="tab">事件库</div>
+            <div class="tab">场景库</div>
+            <div class="tab">伏笔库</div>
+            <div class="tab">禁改设定</div>
+          </div>
+
+          <div class="grid grid-3">
+            <div class="card">
+              <div class="card-title"><h3>沈青禾</h3><span class="status purple">女主</span></div>
+              <p class="muted">沈家庶女，隐忍、聪慧、外柔内刚。黑色长发，浅青色古风衣裙。</p>
+              <div class="pill-list"><span class="pill">不能短发</span><span class="pill">不能活泼搞笑</span></div>
+              <div class="prompt-box" style="margin-top:12px;">古风国漫，清冷少女，黑色长发，浅青色衣裙，雨夜氛围...</div>
+            </div>
+            <div class="card">
+              <div class="card-title"><h3>顾长渊</h3><span class="status info">男主</span></div>
+              <p class="muted">身份成谜的青年权臣，沉稳克制，暗中调查沈家旧事。</p>
+              <div class="pill-list"><span class="pill">真实身份不可提前暴露</span></div>
+              <div class="prompt-box" style="margin-top:12px;">古风国漫，黑衣青年，冷峻，长身玉立，暗处观察...</div>
+            </div>
+            <div class="card">
+              <div class="card-title"><h3>沈夫人</h3><span class="status danger">反派</span></div>
+              <p class="muted">沈家主母，强势、精明，掌握女主母亲旧事。</p>
+              <div class="pill-list"><span class="pill">不能弱化为普通反派</span></div>
+              <div class="prompt-box" style="margin-top:12px;">古风贵妇，华服，压迫感，正厅烛光，威严...</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-episode" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>单话改编</h1>
+              <p>选择 1～3 章，生成一话漫画改编方案和剧本。</p>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('已生成本话方案')">生成本话方案</button>
+          </div>
+
+          <div class="episode-layout">
+            <div class="card">
+              <div class="card-title"><h3>选择章节</h3></div>
+              <div class="chapter-list">
+                <div class="chapter-item active"><strong>第1章 雨夜退婚</strong><span class="muted">已选择</span></div>
+                <div class="chapter-item active"><strong>第2章 重回沈家</strong><span class="muted">已选择</span></div>
+                <div class="chapter-item"><strong>第3章 玉佩旧事</strong><span class="muted">可选择</span></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title"><h3>改编参数</h3></div>
+              <div class="form-group"><label>目标格数</label><input value="40" /></div>
+              <div class="form-group"><label>漫画风格</label><select><option>古风国漫条漫</option></select></div>
+              <div class="form-group"><label>改编强度</label><select><option>中等：压缩心理描写，强化冲突</option></select></div>
+              <div class="form-group"><label>节奏类型</label><select><option>强冲突开场</option></select></div>
+              <div class="pill-list"><span class="pill">结尾钩子：开启</span><span class="pill">保留原文对白：开启</span></div>
+            </div>
+
+            <div class="card">
+              <div class="card-title"><h3>生成结果</h3><span class="status success">已生成</span></div>
+              <h2 style="margin-top:0;">第 1 话：雨夜退婚</h2>
+              <p class="muted">沈青禾雨夜回到沈家，被迫面对家族安排的婚约，她在正厅中第一次公开反抗沈夫人。</p>
+              <div class="grid grid-2">
+                <div><strong>核心冲突</strong><p class="muted">女主反抗家族婚约。</p></div>
+                <div><strong>结尾钩子</strong><p class="muted">顾长渊看到她手中的玉佩。</p></div>
+              </div>
+              <div class="toolbar"><button class="btn btn-outline" onclick="showPage('script')">进入剧本</button><button class="btn btn-primary" onclick="showPage('storyboard')">生成分镜</button></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-script" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>单话剧本</h1>
+              <p>编辑 AI 生成的漫画剧本，为分镜生成提供稳定输入。</p>
+            </div>
+            <button class="btn btn-primary" onclick="showPage('storyboard')">生成分镜</button>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="card">
+              <div class="card-title"><h3>第 1 话：雨夜退婚</h3><span class="status purple">剧本已生成</span></div>
+              <div class="form-group"><label>本话梗概</label><textarea>沈青禾雨夜回到沈家，在正厅中被沈夫人逼迫接受婚约。她以玉佩为证，当众拒婚，顾长渊在暗处注意到玉佩。</textarea></div>
+              <div class="form-group"><label>核心冲突</label><input value="女主第一次公开反抗家族安排" /></div>
+              <div class="form-group"><label>结尾钩子</label><input value="顾长渊认出玉佩，暗示女主母亲旧事" /></div>
+            </div>
+
+            <div class="card">
+              <div class="card-title"><h3>AI 优化助手</h3></div>
+              <div class="grid">
+                <button class="btn btn-outline" onclick="showToast('已优化对白')">优化对白</button>
+                <button class="btn btn-outline" onclick="showToast('已增强冲突')">增强冲突</button>
+                <button class="btn btn-outline" onclick="showToast('已压缩剧情')">压缩剧情</button>
+                <button class="btn btn-outline" onclick="showToast('已检查禁改设定')">检查设定冲突</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:18px;">
+            <div class="card-title"><h3>场景段落</h3></div>
+            <table class="table">
+              <thead><tr><th>场景</th><th>剧情目的</th><th>人物</th><th>对白 / 旁白</th><th>转场</th></tr></thead>
+              <tbody>
+                <tr><td>沈家府门</td><td>建立雨夜归家氛围</td><td>沈青禾</td><td>旁白：她终于回来了。</td><td>雨声转正厅</td></tr>
+                <tr><td>沈家正厅</td><td>建立压迫与冲突</td><td>沈青禾、沈夫人</td><td>沈夫人：这门婚事，由不得你。</td><td>玉佩特写</td></tr>
+                <tr><td>正厅门外</td><td>设置结尾钩子</td><td>顾长渊</td><td>顾长渊：那枚玉佩……</td><td>黑屏悬念</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="page-storyboard" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>分镜编辑器</h1>
+              <p>生成、编辑和管理单话漫画分镜，复制 Prompt 并进入导出。</p>
+            </div>
+            <div><button class="btn btn-outline" onclick="showToast('已复制全部 Prompt')">复制全部 Prompt</button><button class="btn btn-primary" onclick="showPage('export')">进入导出</button></div>
+          </div>
+
+          <div class="storyboard-layout">
+            <aside class="card sticky">
+              <div class="card-title"><h3>本话信息</h3></div>
+              <p><strong>第 1 话：雨夜退婚</strong></p>
+              <p class="muted">目标 40 格，当前 42 格。核心冲突：女主反抗家族婚约。</p>
+              <div class="pill-list"><span class="pill">沈青禾</span><span class="pill">沈夫人</span><span class="pill">顾长渊</span></div>
+              <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
+              <h3>禁改提醒</h3>
+              <ul class="muted">
+                <li>沈青禾不能短发。</li>
+                <li>顾长渊真实身份不能提前暴露。</li>
+                <li>玉佩来源不能在第 1 话解释。</li>
+              </ul>
+              <button class="btn btn-primary" onclick="showToast('已创建分镜生成任务')">重新生成分镜</button>
+            </aside>
+
+            <div class="panel-list">
+              <div class="panel-card active">
+                <div class="panel-head"><strong>第 1 格 · 沈家府门</strong><span class="status purple">AI 初稿</span></div>
+                <div class="grid grid-2">
+                  <div class="panel-field"><label>景别</label><input value="远景" /></div>
+                  <div class="panel-field"><label>人物</label><input value="沈青禾" /></div>
+                </div>
+                <div class="panel-field"><label>画面描述</label><textarea>雨夜，沈家府门前，少女独自站在雨幕中，朱红大门在闪电下显得压抑。</textarea></div>
+                <div class="grid grid-2">
+                  <div class="panel-field"><label>旁白</label><input value="她终于回来了。" /></div>
+                  <div class="panel-field"><label>音效</label><input value="哗——" /></div>
+                </div>
+                <div class="panel-field"><label>绘图 Prompt</label><textarea>古风国漫，雨夜府门，清冷少女，黑色长发，浅青色衣裙，电影感远景，雨水，朱红大门，高质量条漫分镜</textarea></div>
+                <div class="toolbar"><button class="btn btn-outline" onclick="showToast('已复制第 1 格 Prompt')">复制 Prompt</button><button class="btn btn-ghost" onclick="showToast('已保存分镜')">保存</button><button class="btn btn-danger">删除</button></div>
+              </div>
+
+              <div class="panel-card">
+                <div class="panel-head"><strong>第 2 格 · 玉佩特写</strong><span class="status warning">已编辑</span></div>
+                <div class="panel-field"><label>画面描述</label><textarea>少女袖中手指握紧玉佩，玉佩上旧纹在雨光中一闪而过。</textarea></div>
+                <div class="panel-field"><label>绘图 Prompt</label><textarea>玉佩特写，少女手指，雨夜冷光，古风道具，细节丰富，悬念氛围</textarea></div>
+                <div class="toolbar"><button class="btn btn-outline" onclick="showToast('已复制第 2 格 Prompt')">复制 Prompt</button><button class="btn btn-ghost">重新生成单格</button></div>
+              </div>
+
+              <div class="panel-card">
+                <div class="panel-head"><strong>第 3 格 · 正厅烛火</strong><span class="status info">待审核</span></div>
+                <div class="panel-field"><label>画面描述</label><textarea>正厅烛火明亮，沈夫人端坐主位，众人沉默站立，压迫感强。</textarea></div>
+                <div class="panel-field"><label>对白</label><input value="沈夫人：这门婚事，由不得你。" /></div>
+                <div class="toolbar"><button class="btn btn-outline">复制 Prompt</button><button class="btn btn-ghost">保存</button></div>
+              </div>
+            </div>
+
+            <aside class="card sticky">
+              <div class="card-title"><h3>漫画预览</h3><span class="status success">42 格</span></div>
+              <div class="comic-phone">
+                <div class="comic-screen">
+                  <div class="comic-panel">雨夜府门远景<div class="bubble">她终于回来了。</div></div>
+                  <div class="comic-panel">玉佩特写<div class="bubble">哗——</div></div>
+                  <div class="comic-panel">正厅对峙<div class="bubble">这门婚事，由不得你。</div></div>
+                  <div class="comic-panel">女主抬眼<div class="bubble">那我偏不认。</div></div>
+                </div>
+              </div>
+              <div class="card-title" style="margin-top:18px;"><h3>当前 Prompt</h3></div>
+              <div class="prompt-box">古风国漫，雨夜府门，清冷少女，黑色长发，浅青色衣裙，电影感远景，雨水，朱红大门，高质量条漫分镜...</div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="page-export" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>导出中心</h1>
+              <p>导出漫画剧本、分镜表、HTML 预览、JSON 和 Prompt TXT。</p>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('已创建导出任务')">开始导出</button>
+          </div>
+
+          <div class="grid grid-5" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;">
+            <div class="export-card selected"><h3>Excel</h3><p class="muted">分镜表格，适合制作流转。</p><span class="status success">推荐</span></div>
+            <div class="export-card"><h3>Word</h3><p class="muted">漫画剧本 + 分镜说明。</p></div>
+            <div class="export-card"><h3>HTML</h3><p class="muted">竖版漫画结构预览。</p></div>
+            <div class="export-card"><h3>JSON</h3><p class="muted">结构化原始数据。</p></div>
+            <div class="export-card"><h3>Prompt TXT</h3><p class="muted">全部绘图提示词。</p></div>
+          </div>
+
+          <div class="card" style="margin-top:18px;">
+            <div class="card-title"><h3>导出历史</h3></div>
+            <table class="table">
+              <thead><tr><th>文件名</th><th>格式</th><th>状态</th><th>大小</th><th>生成时间</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>云州旧梦_第1话_分镜表.xlsx</td><td>Excel</td><td><span class="status success">成功</span></td><td>126KB</td><td>今天 15:10</td><td><button class="btn btn-outline" onclick="showToast('原型中不生成真实文件')">下载</button></td></tr>
+                <tr><td>云州旧梦_第1话_剧本.docx</td><td>Word</td><td><span class="status success">成功</span></td><td>89KB</td><td>今天 15:09</td><td><button class="btn btn-outline" onclick="showToast('原型中不生成真实文件')">下载</button></td></tr>
+                <tr><td>云州旧梦_第1话_预览.html</td><td>HTML</td><td><span class="status warning">生成中</span></td><td>-</td><td>今天 15:12</td><td><button class="btn btn-ghost">查看进度</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="page-tasks" class="page">
+          <div class="page-head">
+            <div class="page-title">
+              <h1>AI 任务记录</h1>
+              <p>查看 HermesAgent 执行状态、失败原因和重试记录。</p>
+            </div>
+            <button class="btn btn-outline" onclick="showToast('已刷新任务列表')">刷新</button>
+          </div>
+
+          <div class="card">
+            <table class="table">
+              <thead><tr><th>ID</th><th>任务类型</th><th>关联对象</th><th>状态</th><th>耗时</th><th>重试</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>#3001</td><td>StoryboardAgent</td><td>第1话</td><td><span class="status success">成功</span></td><td>128s</td><td>0</td><td><button class="btn btn-ghost">查看输出</button></td></tr>
+                <tr><td>#2008</td><td>EpisodeAdaptAgent</td><td>第1-2章</td><td><span class="status success">成功</span></td><td>86s</td><td>0</td><td><button class="btn btn-ghost">查看输出</button></td></tr>
+                <tr><td>#1024</td><td>NovelChapterAnalysisAgent</td><td>第3章</td><td><span class="status info">执行中</span></td><td>42s</td><td>0</td><td><button class="btn btn-ghost">查看状态</button></td></tr>
+                <tr><td>#1018</td><td>NovelChapterAnalysisAgent</td><td>第2章</td><td><span class="status danger">失败</span></td><td>180s</td><td>1</td><td><button class="btn btn-outline" onclick="showToast('已重试任务 #1018')">重试</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <div id="createModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2>创建 MangaForge 项目</h2>
+          <p class="muted">填写小说基础信息和改编目标，创建后进入小说导入。</p>
+        </div>
+        <button class="modal-close" onclick="closeCreateModal()">×</button>
+      </div>
+      <div class="grid grid-2">
+        <div class="form-group"><label>项目名称</label><input value="云州旧梦漫改" /></div>
+        <div class="form-group"><label>小说名称</label><input value="云州旧梦" /></div>
+        <div class="form-group"><label>作者名称</label><input value="佚名" /></div>
+        <div class="form-group"><label>小说类型</label><select><option>古风</option><option>玄幻</option><option>都市</option></select></div>
+        <div class="form-group"><label>漫画风格</label><select><option>古风国漫条漫</option><option>韩漫竖条</option><option>日系清新</option></select></div>
+        <div class="form-group"><label>目标读者</label><select><option>女频读者</option><option>男频读者</option><option>青年读者</option></select></div>
+      </div>
+      <div class="form-group"><label>改编目标</label><textarea>改编为适合平台连载的竖版条漫，第一阶段先生成 3 话样章。</textarea></div>
+      <div class="toolbar" style="justify-content:flex-end;">
+        <button class="btn btn-ghost" onclick="closeCreateModal()">取消</button>
+        <button class="btn btn-primary" onclick="closeCreateModal(); showPage('import'); showToast('项目已创建，进入小说导入')">创建项目</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">操作成功</div>
+
+  <script>
+    const titles = {
+      dashboard: '项目工作台',
+      project: '项目详情',
+      import: '小说导入',
+      chapters: '章节管理',
+      analysis: 'AI 解析',
+      knowledge: '小说知识库',
+      episode: '单话改编',
+      script: '单话剧本',
+      storyboard: '分镜编辑器',
+      export: '导出中心',
+      tasks: 'AI 任务记录'
+    };
+
+    function enterApp() {
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      showToast('登录成功，欢迎进入 MangaForge');
+    }
+
+    function showPage(page) {
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      document.querySelector('#page-' + page).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelector('.nav-item[data-page="' + page + '"]').classList.add('active');
+      document.getElementById('pageTitle').innerText = titles[page] || 'MangaForge';
+      document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      toast.innerText = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function openCreateModal() {
+      document.getElementById('createModal').classList.add('show');
+    }
+
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.remove('show');
+    }
+
+    function simulateUpload() {
+      const bar = document.getElementById('uploadProgress');
+      const text = document.getElementById('uploadText');
+      bar.style.width = '100%';
+      text.innerText = 'yunzhou_old_dream.txt · 上传完成 100% · 已识别 120 章';
+      showToast('上传完成，章节识别成功');
+    }
+
+    function simulateAiTask() {
+      const status = document.getElementById('aiStatus');
+      status.className = 'status info';
+      status.innerText = '解析中';
+      showToast('已创建 AI 解析任务');
+      setTimeout(() => {
+        status.className = 'status success';
+        status.innerText = '解析成功';
+        showToast('AI 解析完成，JSON 校验通过');
+      }, 1800);
+    }
+
+    document.querySelectorAll('.export-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.export-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+      });
+    });
+  </script>
+</body>
+</html>
